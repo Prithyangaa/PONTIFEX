@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #bb86fc; /* Accent color */
+            text-align: center;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* background-color: #1e1e1e; */
+            padding: 10px 20px;
+            border-radius: 8px;
+            /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); */
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: #e0e0e0;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .navbar a:hover {
+            background-color: #bb86fc;
+            color: #121212;
+        }
+        .navbar a.active {
+            background-color: #bb86fc;
+            color: #121212;
+        }
+
+        /* Table Styles */
+        .table {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+        .table th,
+        .table td {
+            padding: 12px;
+            vertical-align: middle;
+        }
+        .table tbody tr {
+            background-color: #2b2b2b;
+            transition: background-color 0.3s ease;
+        }
+        .table tbody tr:hover {
+            background-color: #3b3b3b;
+        }
+
+        /* Buttons */
+        .btn-edit {
+            background-color: #bb86fc;
+            color: #121212;
+            font-weight: 500;
+            font-size: 14px;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .btn-edit:hover {
+            background-color: #9c27b0;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 12px;
+        }
+        .modal-header {
+            border-bottom: 1px solid #444;
+        }
+        .modal-footer {
+            border-top: 1px solid #444;
+        }
+        .modal-body input {
+            background-color: #2b2b2b;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        .modal-body input:focus {
+            background-color: #3b3b3b;
+            border-color: #bb86fc;
+            box-shadow: 0 0 8px rgba(187, 134, 252, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navbar -->
+        <div class="navbar">
+            <div>
+                <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+                <a href="{{ url_for('job_vacancies') }}">Job Vacancies</a>
+                <a href="{{ url_for('my_applications') }}">My Applications</a>
+            </div>
+            <div>
+                <!-- <a href="#" data-bs-toggle="modal" data-bs-target="#editModal">Edit Profile</a> -->
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <h2>Welcome, {{ user.name }}</h2>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ user.email }}</td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ user.name }}</td>
+                </tr>
+                <tr>
+                    <th>Age</th>
+                    <td>{{ user.age }}</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>{{ user.gender }}</td>
+                </tr>
+                <tr>
+                    <th>Skills</th>
+                    <td>{{ user.skills }}</td>
+                </tr>
+                <tr>
+                    <th>Job Role</th>
+                    <td>{{ user.job_role }}</td>
+                </tr>
+                <tr>
+                    <th>Action</th>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#editModal">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Edit Modal -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Profile</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm">
+                            <input type="hidden" id="userId" value="{{ user.id }}">
+                            <label for="editName">Name:</label>
+                            <input type="text" id="editName" class="form-control" value="{{ user.name }}" required>
+                            
+                            <label for="editAge">Age:</label>
+                            <input type="number" id="editAge" class="form-control" value="{{ user.age }}" required>
+                            
+                            <label for="editGender">Gender:</label>
+                            <input type="text" id="editGender" class="form-control" value="{{ user.gender }}" required>
+                            
+                            <label for="editSkills">Skills:</label>
+                            <input type="text" id="editSkills" class="form-control" value="{{ user.skills }}" required>
+                            
+                            <label for="editJobRole">Job Role:</label>
+                            <input type="text" id="editJobRole" class="form-control" value="{{ user.job_role }}" required>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to save changes via AJAX
+        function saveChanges() {
+            const userId = document.getElementById('userId').value;
+            const name = document.getElementById('editName').value;
+            const age = document.getElementById('editAge').value;
+            const gender = document.getElementById('editGender').value;
+            const skills = document.getElementById('editSkills').value;
+            const jobRole = document.getElementById('editJobRole').value;
+            fetch(`/update_user/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    age: age,
+                    gender: gender,
+                    skills: skills,
+                    job_role: jobRole
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Profile updated successfully!');
+                    location.reload(); // Refresh the page to reflect changes
+                } else {
+                    alert('Failed to update profile.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the profile.');
+            });
+        }
+    </script>
+</body>
+</html>
